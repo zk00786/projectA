@@ -1,0 +1,31 @@
+version: '3.4'
+
+networks:
+     barbershopapp:
+services:
+   db:
+     container_name: barbershop-db
+     image: mcr.microsoft.com/mssql/server
+     ports:
+       - 1433:1433
+     environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=p@assw00rd!!
+     networks:
+      - barbershopapp
+   barbershop.api:
+    container_name: barbershop-app
+    image: ${DOCKER_REGISTRY-}barbershopapi
+    build:
+      context: .
+      dockerfile: BarberShop.Api/Dockerfile
+    ports:
+      - 8003:80
+    depends_on:
+       - db
+    environment:
+       - DB_HOST=db
+       - DB_NAME=barbershopApp
+       - DB_SA_PASSWORD=p@assw00rd!!
+    networks:
+      - barbershopapp
